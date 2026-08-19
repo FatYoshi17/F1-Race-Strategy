@@ -4,13 +4,14 @@
 FROM python:3.10-slim
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    libgomp1 \
+    libgomp1 build-essential \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /srv
 
 COPY backend/requirements-cpu.txt ./requirements-cpu.txt
-RUN pip install --no-cache-dir torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu \
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel \
+    && pip install --no-cache-dir torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu \
     && pip install --no-cache-dir -r requirements-cpu.txt
 
 COPY backend/app ./backend/app
