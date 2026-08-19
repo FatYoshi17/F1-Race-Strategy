@@ -1,0 +1,10 @@
+# Reference only — this app is designed to run inside the existing
+# `tire-telemetry` conda env, which already has these installed (and CUDA
+# torch, which pip alone won't set up correctly). See backend/README.md.
+torch==2.5.1
+pytorch_forecasting==1.4.0
+lightning==2.5.5
+fastf1==3.6.1
+fastapi==0.121.1
+uvicorn==0.38.0
+pandas==2.3.2

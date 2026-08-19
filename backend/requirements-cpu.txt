@@ -1,0 +1,8 @@
+# torch (CPU wheel) is installed separately in the Dockerfile from the
+# PyTorch CPU index; everything else comes from PyPI normally.
+pytorch_forecasting==1.4.0
+lightning==2.5.5
+fastf1==3.6.1
+fastapi==0.121.1
+uvicorn==0.38.0
+pandas==2.3.2

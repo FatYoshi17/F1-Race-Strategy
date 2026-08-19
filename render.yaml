@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: f1-pitwall-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: .
+    plan: starter
+    healthCheckPath: /api/health
+    envVars:
+      - key: ALLOWED_ORIGINS
+        value: ""

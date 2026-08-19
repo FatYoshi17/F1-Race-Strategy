@@ -1,0 +1,19 @@
+node_modules/
+frontend/dist/
+__pycache__/
+*.pyc
+.env
+.env.local
+
+# Local-only artifacts not needed by the deployed app
+*.ipynb
+*.png
+lightning_logs/
+cache_fastf1/
+cache/2024/
+data/
+f1_demo_laps.csv
+backend/spike/
+
+# Keep: cache/2025/, cache/fastf1_http_cache.sqlite, runs/tft_fastf1.ckpt
+# — the deployed backend reads these at runtime.

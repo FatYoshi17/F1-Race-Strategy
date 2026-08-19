@@ -1,0 +1,13 @@
+frontend/
+node_modules/
+.git/
+*.ipynb
+*.png
+lightning_logs/
+cache_fastf1/
+cache/2024/
+f1_demo_laps.csv
+data/
+backend/spike/
+__pycache__/
+*.pyc

@@ -1,0 +1,9 @@
+.pixel-chart-wrap {
+  width: 100%;
+  border: 2px solid var(--line);
+  background: #050505;
+}
+
+.pixel-chart-wrap canvas {
+  display: block;
+}
