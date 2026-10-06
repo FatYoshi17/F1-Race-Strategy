@@ -9,3 +9,9 @@ services:
     envVars:
       - key: ALLOWED_ORIGINS
         value: "https://frontend-tau-seven-40.vercel.app"
+      # Signs login tokens. Render generates a random value once and keeps it.
+      - key: JWT_SECRET
+        generateValue: true
+      # DATABASE_URL (Postgres) is intentionally NOT declared here: it's a
+      # secret you add in the Render dashboard. Without it the app falls back
+      # to a local SQLite file, which Render's free tier wipes on restart.

@@ -6,3 +6,6 @@ fastf1==3.6.1
 fastapi==0.121.1
 uvicorn==0.38.0
 pandas==2.3.2
+sqlalchemy==2.0.43
+psycopg2-binary>=2.9,<3
+PyJWT>=2.8,<3

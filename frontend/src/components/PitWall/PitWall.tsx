@@ -1,12 +1,15 @@
+import { useQueryClient } from "@tanstack/react-query"
 import type { CSSProperties } from "react"
 import { useMemo } from "react"
-import { useSimulate } from "../../api/hooks"
+import { useSaveRun, useSimulate } from "../../api/hooks"
 import type { Compound, StintPlan } from "../../api/types"
 import { sfx } from "../../audio/sfx"
 import { formatDelta, formatRaceTime } from "../../lib/format"
 import { teamColor } from "../../lib/teamColor"
+import { useAuthStore } from "../../state/auth"
 import { useAppStore } from "../../state/store"
 import { PixelChart } from "../PixelChart/PixelChart"
+import { SavedRuns } from "./SavedRuns"
 import { PixelCar, TireBadge } from "../sprites/Sprites"
 import "./PitWall.css"
 
@@ -89,6 +92,11 @@ export function PitWall() {
   } = useAppStore()
 
   const simulate = useSimulate()
+  const saveRun = useSaveRun()
+  const queryClient = useQueryClient()
+  const user = useAuthStore((s) => s.user)
+  const logout = useAuthStore((s) => s.logout)
+  const openAuth = useAuthStore((s) => s.openModal)
   const color = team ? teamColor(team) : "var(--accent)"
 
   const totalPlanLaps = useMemo(() => plan.reduce((sum, s) => sum + s.laps, 0), [plan])
@@ -119,16 +127,43 @@ export function PitWall() {
           <span>PIT WALL CONSOLE</span>
         </div>
         <div className="pitwall-session-label">{sessionLabel}</div>
-        <button
-          className="arcade-btn"
-          onClick={() => {
-            sfx.blip()
-            reset()
-            goTo("garage")
-          }}
-        >
-          ← GARAGE
-        </button>
+        <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
+          {user ? (
+            <div className="auth-chip">
+              <span title={user.email}>{user.email}</span>
+              <button
+                className="arcade-btn"
+                onClick={() => {
+                  sfx.blip()
+                  logout()
+                  queryClient.removeQueries({ queryKey: ["runs"] })
+                }}
+              >
+                LOGOUT
+              </button>
+            </div>
+          ) : (
+            <button
+              className="arcade-btn"
+              onClick={() => {
+                sfx.blip()
+                openAuth()
+              }}
+            >
+              LOGIN
+            </button>
+          )}
+          <button
+            className="arcade-btn"
+            onClick={() => {
+              sfx.blip()
+              reset()
+              goTo("garage")
+            }}
+          >
+            ← GARAGE
+          </button>
+        </div>
       </div>
 
       <div className="pitwall-grid">
@@ -212,6 +247,32 @@ export function PitWall() {
           {simulate.isError && (
             <div className="sim-error">{(simulate.error as Error).message}</div>
           )}
+          {result && simulate.variables && (
+            <button
+              className="arcade-btn run-button"
+              disabled={saveRun.isPending}
+              onClick={() => {
+                if (!user) {
+                  sfx.blip()
+                  openAuth()
+                  return
+                }
+                // Save exactly what was simulated, not whatever the editor shows now.
+                saveRun.mutate(simulate.variables, { onSuccess: () => sfx.confirm() })
+              }}
+            >
+              {saveRun.isPending
+                ? "SAVING..."
+                : saveRun.isSuccess
+                  ? "✔ SAVED — SAVE AGAIN?"
+                  : user
+                    ? "💾 SAVE THIS RUN"
+                    : "💾 LOGIN TO SAVE THIS RUN"}
+            </button>
+          )}
+          {saveRun.isError && (
+            <div className="sim-error">{(saveRun.error as Error).message}</div>
+          )}
         </div>
 
         {/* RIGHT: chart + readouts */}
@@ -273,6 +334,8 @@ export function PitWall() {
           </div>
         </div>
       </div>
+
+      <SavedRuns />
     </div>
   )
 }

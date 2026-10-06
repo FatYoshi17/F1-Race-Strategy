@@ -82,6 +82,36 @@ export interface CompareResult {
   } | null
 }
 
+export interface AuthUser {
+  id: number
+  email: string
+}
+
+export interface AuthResponse {
+  access_token: string
+  token_type: string
+  user: AuthUser
+}
+
+export interface SavedRun {
+  id: number
+  name: string
+  session_id: string
+  driver: string
+  team: string
+  plan: StintPlan[]
+  rival_plan: StintPlan[] | null
+  pit_loss_s: number
+  total_time_s: number
+  rival_total_time_s: number | null
+  final_delta_s: number | null
+  created_at: string
+}
+
+export interface SaveRunRequest extends SimulateRequest {
+  name?: string
+}
+
 export interface SimulateRequest {
   session_id: string
   driver: string

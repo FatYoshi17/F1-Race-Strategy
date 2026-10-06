@@ -1,0 +1,128 @@
+.auth-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.82);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.auth-modal {
+  width: 100%;
+  max-width: 360px;
+}
+
+.auth-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px;
+}
+
+.auth-body label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  color: var(--ink-dim);
+  letter-spacing: 1px;
+}
+
+.auth-body label small {
+  font-family: var(--font-mono);
+  font-size: 14px;
+}
+
+.auth-body input {
+  background: #050505;
+  border: 2px solid var(--line-bright);
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 20px;
+  padding: 6px 8px;
+}
+
+.auth-body input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.auth-switch {
+  background: none;
+  border: none;
+  color: var(--ink-dim);
+  font-size: 9px;
+  letter-spacing: 1px;
+  padding: 2px;
+}
+
+.auth-switch:hover {
+  color: var(--accent);
+}
+
+.auth-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 15px;
+  color: var(--ink-dim);
+}
+
+.auth-chip span {
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--accent);
+}
+
+.runs-panel {
+  margin-top: 18px;
+}
+
+.runs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px 16px;
+}
+
+.run-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  background: var(--bg-panel-raised);
+  border: 1px solid var(--line);
+  padding: 8px 10px;
+  font-family: var(--font-mono);
+  font-size: 16px;
+}
+
+.run-row-name {
+  flex: 1 1 200px;
+  color: var(--ink);
+}
+
+.run-row-meta {
+  color: var(--ink-dim);
+}
+
+.run-row-time {
+  color: var(--accent);
+}
+
+.run-row .arcade-btn {
+  padding: 6px 10px;
+  font-size: 9px;
+}
+
+.runs-empty {
+  padding: 16px;
+  font-family: var(--font-mono);
+  color: var(--ink-dim);
+}

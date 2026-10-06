@@ -1,11 +1,18 @@
+import logging
 import os
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from sqlalchemy import text
+from sqlalchemy.exc import SQLAlchemyError
 
 from . import sessions, strategy, tft_model
 from .config import SESSION_REGISTRY, VALID_COMPOUNDS
+from .db import engine, init_db
 from .rollout import PlanTooShortError
+from .routers.auth import router as auth_router
+from .routers.runs import router as runs_router
 from .schemas import SimulateRequest
 
 app = FastAPI(title="F1 Pit Wall API")
@@ -16,19 +23,43 @@ _extra_origins = [o.strip() for o in os.environ.get("ALLOWED_ORIGINS", "").split
 app.add_middleware(
     CORSMiddleware,
     allow_origins=_default_origins + _extra_origins,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "DELETE", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type"],
 )
 
 
+app.include_router(auth_router)
+app.include_router(runs_router)
+
+log = logging.getLogger("pitwall")
+
+
+@app.exception_handler(SQLAlchemyError)
+async def _db_unavailable(_: Request, exc: SQLAlchemyError):
+    log.error("database error: %s", exc)
+    return JSONResponse(status_code=503, content={"detail": "Database unavailable. Try again shortly."})
+
+
 @app.on_event("startup")
-def _warm_up_model() -> None:
+def _startup() -> None:
+    # The simulator doesn't need the database, so a bad DATABASE_URL must not
+    # stop the app from booting: auth/saved-runs degrade to 503 instead.
+    try:
+        init_db()
+    except Exception:
+        log.exception("database init failed; auth and saved runs are unavailable")
     tft_model.load_model()
 
 
 @app.get("/api/health")
 def health():
-    return {"status": "ok", "device": tft_model.device()}
+    try:
+        with engine.connect() as conn:
+            conn.execute(text("SELECT 1"))
+        db = "ok"
+    except Exception:
+        db = "unavailable"
+    return {"status": "ok", "device": tft_model.device(), "db": db}
 
 
 @app.get("/api/sessions")

@@ -17,3 +17,7 @@ backend/spike/
 
 # Keep: cache/2025/, cache/fastf1_http_cache.sqlite, runs/tft_fastf1.ckpt
 # — the deployed backend reads these at runtime.
+
+# Local databases
+*.db
+*.sqlite3
