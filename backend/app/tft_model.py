@@ -17,6 +17,10 @@ _device: str | None = None
 def load_model() -> TemporalFusionTransformer:
     global _model, _device
     if _model is None:
+        # Containers are CPU-throttled but still *see* every host core; torch
+        # would spawn that many threads and thrash against the cgroup quota.
+        # The model is tiny (batch of 1), so one thread is also the fastest.
+        torch.set_num_threads(1)
         model = TemporalFusionTransformer.load_from_checkpoint(
             str(CHECKPOINT_PATH), map_location="cpu"
         )

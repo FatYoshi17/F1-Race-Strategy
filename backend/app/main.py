@@ -1,5 +1,6 @@
 import logging
 import os
+import threading
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -49,6 +50,17 @@ def _startup() -> None:
     except Exception:
         log.exception("database init failed; auth and saved runs are unavailable")
     tft_model.load_model()
+    # Parse the cached FastF1 sessions in the background so the first user
+    # request doesn't pay the (slow, CPU-throttled) load cost.
+    threading.Thread(target=_prewarm_sessions, daemon=True).start()
+
+
+def _prewarm_sessions() -> None:
+    for meta in SESSION_REGISTRY:
+        try:
+            sessions.get_drivers(meta["id"])
+        except Exception:
+            log.exception("prewarm failed for %s", meta["id"])
 
 
 @app.get("/api/health")

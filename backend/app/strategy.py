@@ -2,13 +2,41 @@
 and computes the cumulative-time delta lap by lap (undercut/overcut view)."""
 from __future__ import annotations
 
+import json
+from collections import OrderedDict
+from threading import Lock
+
 from . import rollout
 from .config import DEFAULT_PIT_LOSS_S
+
+# Rollouts are deterministic for a given (session, driver, plans, pit loss), so
+# repeat requests (re-running a plan, loading a saved run) can skip the model.
+# Small in-process LRU; it resets on restart, which is fine for a cache.
+_CACHE_MAX = 128
+_cache: "OrderedDict[str, dict]" = OrderedDict()
+_cache_lock = Lock()
 
 
 def compare(session_id: str, driver: str, plan: list[dict],
             rival_plan: list[dict] | None = None,
             pit_loss_s: float = DEFAULT_PIT_LOSS_S) -> dict:
+    key = json.dumps([session_id, driver, plan, rival_plan, pit_loss_s], sort_keys=True)
+    with _cache_lock:
+        if key in _cache:
+            _cache.move_to_end(key)
+            return _cache[key]
+
+    result = _compare(session_id, driver, plan, rival_plan, pit_loss_s)
+
+    with _cache_lock:
+        _cache[key] = result
+        while len(_cache) > _CACHE_MAX:
+            _cache.popitem(last=False)
+    return result
+
+
+def _compare(session_id: str, driver: str, plan: list[dict],
+             rival_plan: list[dict] | None, pit_loss_s: float) -> dict:
     primary = rollout.simulate(session_id, driver, plan, pit_loss_s)
     result = {"primary": primary, "rival": None, "delta": None}
 

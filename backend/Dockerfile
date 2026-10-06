@@ -19,6 +19,6 @@ COPY runs/tft_fastf1.ckpt ./runs/tft_fastf1.ckpt
 COPY cache ./cache
 
 WORKDIR /srv/backend
-ENV PORT=8000
+ENV PORT=8000 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1
 EXPOSE 8000
 CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT}"]
