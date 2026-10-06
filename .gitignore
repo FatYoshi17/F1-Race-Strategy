@@ -21,3 +21,6 @@ backend/spike/
 # Local databases
 *.db
 *.sqlite3
+
+# Personal interview notes
+docs/INTERVIEW_PREP.md

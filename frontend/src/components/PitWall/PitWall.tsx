@@ -330,7 +330,7 @@ export function PitWall() {
           <div className="readout-note">
             {result?.delta?.crossover_lap
               ? `Strategies cross over around lap ${result.delta.crossover_lap} — whoever pits first pays it back there.`
-              : "Predictions come from a live pytorch_forecasting Temporal Fusion Transformer, seeded with this driver's real opening laps. Quantile band = model's P10–P90 uncertainty; calibration offset corrects the checkpoint's cross-race pooling bias back to this circuit's real pace."}
+              : "Predictions come from a live pytorch_forecasting Temporal Fusion Transformer, seeded with this driver's real opening laps. Quantile band = model's P10–P90 uncertainty; the calibration offset shifts the model (trained on a single circuit) to this circuit's real pace level."}
           </div>
         </div>
       </div>

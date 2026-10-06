@@ -44,8 +44,9 @@ Then open http://localhost:5173. The Vite dev server proxies `/api` to
   for whatever hypothetical stint plan you build in the UI.
 
 See [backend/README.md](backend/README.md) for the modeling details,
-including a known limitation in the checkpoint (pooled cross-race
-normalization) and how the app corrects for it transparently.
+including a known limitation in the checkpoint (trained on a single
+circuit, so its absolute pace level is circuit-specific) and how the app
+corrects for it transparently.
 
 ## Stack
 

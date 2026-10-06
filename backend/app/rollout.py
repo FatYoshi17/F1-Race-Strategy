@@ -74,16 +74,15 @@ def simulate(session_id: str, driver: str, plan: list[dict],
     next_time_idx = int(window["time_idx"].iloc[-1]) + 1
     pit_loss_total = 0.0
 
-    # The checkpoint's series_id is only "{DRIVER}_S{stint}" with no
-    # race/track identity, so its group-normalizer stats are pooled across
-    # every race that driver ran and raw continuations drift toward that
-    # driver's season-wide average pace rather than this circuit's actual
-    # pace level. We anchor the model back to reality with a single
-    # transparent bias correction: compare its very first post-context
-    # prediction against this race's own recent real pace, and apply that
-    # constant offset to every displayed (but not re-fed) prediction. The
-    # model's learned degradation *shape* is trusted; only the absolute
-    # level is recalibrated.
+    # The checkpoint was trained and evaluated on a single race (Singapore
+    # 2025: runs/tft_preds_SAI_S1.csv matches that session lap-for-lap), and
+    # its target normalizer is fitted to that circuit's pace level. Applied
+    # to a different circuit, raw continuations keep the learned tyre-
+    # degradation *shape* but sit at the wrong absolute level (e.g. ~97s on
+    # a ~93s Suzuka). We anchor to reality with one transparent offset:
+    # compare the very first post-context prediction against this race's own
+    # recent real pace, and apply that constant to every displayed (but not
+    # re-fed) prediction. Only the absolute level is recalibrated.
     calibration_offset = None
 
     for idx in range(ENCODER_LENGTH, len(schedule)):
